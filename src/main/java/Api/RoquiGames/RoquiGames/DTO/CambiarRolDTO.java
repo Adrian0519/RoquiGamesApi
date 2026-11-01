@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CambiarRolDTO {
+
     private String nombreUsuario;
     private String rol;
+
 }
