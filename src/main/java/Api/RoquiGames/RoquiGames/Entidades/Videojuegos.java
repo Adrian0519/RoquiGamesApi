@@ -33,7 +33,7 @@ public class Videojuegos {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-    @Column(name = "anio_lanzamiento")
+    @Column(name = "anio_lanzamiento", columnDefinition = "year")
     private Integer anio_lanzamiento;
 
     @ToString.Exclude
