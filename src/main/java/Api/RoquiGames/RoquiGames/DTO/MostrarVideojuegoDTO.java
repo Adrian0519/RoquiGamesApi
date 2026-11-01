@@ -1,9 +1,6 @@
 package Api.RoquiGames.RoquiGames.DTO;
 
-import Api.RoquiGames.RoquiGames.Entidades.Ejemplares;
 import Api.RoquiGames.RoquiGames.Entidades.Plataformas;
-import Api.RoquiGames.RoquiGames.Entidades.Valoraciones;
-import Api.RoquiGames.RoquiGames.Entidades.VideojuegosGeneros;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
