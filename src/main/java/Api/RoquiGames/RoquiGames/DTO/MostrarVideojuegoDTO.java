@@ -25,7 +25,7 @@ public class MostrarVideojuegoDTO {
     private BigDecimal precio_compra;
     private BigDecimal precio_alquiler;
     private List<String> videojuegos_generos;
-    private List<Valoraciones> valoraciones;
     private Boolean disponible_compra;
     private Boolean disponible_alquiler;
+
 }
