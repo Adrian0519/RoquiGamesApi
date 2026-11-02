@@ -41,7 +41,7 @@ public class JwtService {
                 .compact();
     }
 
-    public Integer extrerUsuarioId(String token){
+    public Integer extraerUsuarioId(String token){
         SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
 
         String idUsuario= Jwts.parser()
