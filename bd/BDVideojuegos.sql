@@ -1,3 +1,5 @@
+drop database roqui_games;
+
 CREATE DATABASE IF NOT EXISTS roqui_games
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
@@ -161,13 +163,20 @@ INSERT INTO generos (nombre) VALUES
                                  ('Simulación'),
                                  ('Metroidvania');
 
+-- CUENTAS DE PRUEBA PARA DESARROLLO
+-- Las contraseñas se guardan como hashes BCrypt, no en texto plano.
+-- Carlos:         carlos@example.com       | contraseña: Carlos123 | rol: CLIENTE
+-- Laura:          laura@example.com        | contraseña: Laura123  | rol: CLIENTE
+-- Miguel:         miguel@example.com       | contraseña: Miguel123 | rol: TENDERO
+-- Administrador:  admin@example.com        | contraseña: Admin123  | rol: ADMIN
+-- Estas contraseñas son únicamente para pruebas; no reutilizarlas en producción.
 INSERT INTO usuarios
 (nombre, apellidos, email, password, rol)
 VALUES
-    ('Carlos', 'Pérez López', 'carlos@example.com', 'HASH_DE_PRUEBA_1', 'CLIENTE'),
-    ('Laura', 'García Martín', 'laura@example.com', 'HASH_DE_PRUEBA_2', 'CLIENTE'),
-    ('Miguel', 'Sánchez Ruiz', 'miguel@example.com', 'HASH_DE_PRUEBA_3', 'TENDERO'),
-    ('Administrador', 'Roqui Games', 'admin@example.com', 'HASH_DE_PRUEBA_4', 'ADMIN');
+    ('Carlos', 'Pérez López', 'carlos@example.com', '$2y$10$A.fUQOO3aXL6nZv0HmHqsO1tReranIUzizepCXFTSlv0Uig/weZjG', 'CLIENTE'),
+    ('Laura', 'García Martín', 'laura@example.com', '$2y$10$JuG34YJGsENNs4TCyfCrHOgOqA9EVpfU9tElBR9qMOHcqxW8Wr3y.', 'CLIENTE'),
+    ('Miguel', 'Sánchez Ruiz', 'miguel@example.com', '$2y$10$MS9Q2BpSPI8khOdHobTt8.iMIBmIX9IqTHJ9tkMxkDQ87NH4TK.uC', 'TENDERO'),
+    ('Administrador', 'Roqui Games', 'admin@example.com', '$2y$10$L6/8RDIxcDV2ux1.PaQtJOWEuZemNrAHhE0azaZjeT2VpJQ6RusAm', 'ADMIN');
 
 INSERT INTO videojuegos
 (codigo_producto, titulo, descripcion, anio_lanzamiento,
