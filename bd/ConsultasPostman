@@ -6,3 +6,8 @@ http://localhost:8080/api/login
     "password": "Carlos123"
 }
 -------------------------------------------------------------------------------
+
+
+Siguientes pasos por confirmar
+
+Crear una ruta de prueba protegida.
