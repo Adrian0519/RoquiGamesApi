@@ -19,16 +19,15 @@ public class LoginService {
 
     }
 
-    public Usuarios iniciarSesion(LoginDTO loginDTO){
+    public Usuarios iniciarSesion(LoginDTO loginDTO) {
 
-        Usuarios usuarios=usuariosRepository.findByEmail(loginDTO.getEmail())
-                .orElseThrow(()-> new RuntimeException("Correo no encontrado"));
-
-        if (!usuarios.getActivo()){
+        Usuarios usuarios = usuariosRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new RuntimeException("Correo no encontrado"));
+        if (!usuarios.getActivo()) {
             throw new RuntimeException("La cuenta esta desactivada");
         }
 
-        if (passwordEncoder.matches(loginDTO.getPassword(), usuarios.getPassword())){
+        if (passwordEncoder.matches(loginDTO.getPassword(), usuarios.getPassword())) {
             throw new RuntimeException("Contrasena incorrecta");
         }
 
