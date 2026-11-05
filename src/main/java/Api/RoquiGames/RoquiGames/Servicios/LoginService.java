@@ -37,12 +37,9 @@ public class LoginService {
         }
 
         String token = jwtService.generarToken(usuario);
-        String nombre= cifradoService.descifrar(usuario.getNombre());
-        String email= cifradoService.descifrar(usuario.getEmail());
         return LoginRespuestaDTO.builder()
                 .id_usuario(usuario.getId_usuario())
-                .nombre(nombre)
-                .email(email)
+                .nick(usuario.getNick())
                 .rol(usuario.getRol())
                 .token(token)
                 .build();

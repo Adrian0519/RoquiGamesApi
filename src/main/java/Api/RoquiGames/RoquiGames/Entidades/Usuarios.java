@@ -29,10 +29,10 @@ public class Usuarios implements UserDetails {
     @Column(name = "id_usuario")
     private Integer id_usuario;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 512)
     private String nombre;
 
-    @Column(length = 150)
+    @Column(length = 512)
     private String apellidos;
 
     @Column(nullable = false, length = 512)
@@ -75,7 +75,7 @@ public class Usuarios implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return nick;
     }
 
     //ESTOS 4 METODOS SON DE SPRING
