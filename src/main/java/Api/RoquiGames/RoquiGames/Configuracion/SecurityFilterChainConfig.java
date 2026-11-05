@@ -15,7 +15,10 @@ public class SecurityFilterChainConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
-                .csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth.requestMatchers(
+                .csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(
                         "/api/login",
                         "/api/usuarios/registro",
                         "/api/videojuegos/**",
