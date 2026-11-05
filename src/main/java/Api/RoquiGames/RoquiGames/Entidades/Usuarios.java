@@ -35,8 +35,14 @@ public class Usuarios implements UserDetails {
     @Column(length = 150)
     private String apellidos;
 
-    @Column(nullable = false, unique = true, length = 150)
+    @Column(nullable = false, length = 512)
     private String email;
+
+    @Column(name = "email_hash", nullable = false, unique = true, length = 64)
+    private String emailHash;
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String nick;
 
     @ToString.Exclude
     @Column(nullable = false, length = 255)

@@ -13,17 +13,20 @@ public class LoginService {
     private final JwtService jwtService;
     private final UsuariosRepository usuariosRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CifradoService cifradoService;
 
-    public LoginService(UsuariosRepository usuariosRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public LoginService(UsuariosRepository usuariosRepository, PasswordEncoder passwordEncoder, JwtService jwtService,CifradoService cifradoService) {
 
         this.usuariosRepository = usuariosRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.cifradoService = cifradoService;
     }
 
     public LoginRespuestaDTO iniciarSesion(LoginDTO loginDTO) {
 
-        Usuarios usuario = usuariosRepository.findByEmail(loginDTO.getEmail())
+        String emailHash = cifradoService.generarHashEmail(loginDTO.getEmail());
+        Usuarios usuario = usuariosRepository.findByEmailHash(emailHash)
                 .orElseThrow(() -> new RuntimeException("Correo no encontrado"));
         if (!usuario.getActivo()) {
             throw new RuntimeException("La cuenta esta desactivada");
@@ -34,11 +37,12 @@ public class LoginService {
         }
 
         String token = jwtService.generarToken(usuario);
-
+        String nombre= cifradoService.descifrar(usuario.getNombre());
+        String email= cifradoService.descifrar(usuario.getEmail());
         return LoginRespuestaDTO.builder()
                 .id_usuario(usuario.getId_usuario())
-                .nombre(usuario.getNombre())
-                .email(usuario.getEmail())
+                .nombre(nombre)
+                .email(email)
                 .rol(usuario.getRol())
                 .token(token)
                 .build();

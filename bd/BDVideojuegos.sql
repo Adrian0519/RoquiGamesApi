@@ -1,4 +1,17 @@
-drop database roqui_games;
+-- ============================================================
+-- ROQUI GAMES - BASE DE DATOS COMPLETA
+-- ============================================================
+-- IMPORTANTE:
+-- DROP DATABASE elimina la base de datos existente.
+-- Ejecutar solamente si se quiere recrear desde cero.
+--
+-- Los datos personales de prueba siguen inicialmente en claro.
+-- El cifrado AES y el cálculo HMAC se implementarán después
+-- desde Java. No se deben usar las cuentas hasta completar
+-- esa adaptación.
+-- ============================================================
+
+DROP DATABASE roqui_games;
 
 CREATE DATABASE IF NOT EXISTS roqui_games
     CHARACTER SET utf8mb4
@@ -6,26 +19,48 @@ CREATE DATABASE IF NOT EXISTS roqui_games
 
 USE roqui_games;
 
+
+-- ============================================================
+-- TABLA: USUARIOS
+-- ============================================================
+
 CREATE TABLE IF NOT EXISTS usuarios (
                                         id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-                                        nombre VARCHAR(100) NOT NULL,
-    apellidos VARCHAR(150),
-    email VARCHAR(150) NOT NULL UNIQUE,
+                                        nombre VARCHAR(512) NOT NULL,
+    apellidos VARCHAR(512),
+    nick VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(512) NOT NULL,
+    email_hash CHAR(64) NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     rol ENUM('CLIENTE', 'TENDERO', 'ADMIN') NOT NULL DEFAULT 'CLIENTE',
     fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     activo BOOLEAN NOT NULL DEFAULT TRUE
     );
 
+
+-- ============================================================
+-- TABLA: PLATAFORMAS
+-- ============================================================
+
 CREATE TABLE IF NOT EXISTS plataformas (
                                            id_plataforma INT AUTO_INCREMENT PRIMARY KEY,
                                            nombre VARCHAR(100) NOT NULL UNIQUE
     );
 
+
+-- ============================================================
+-- TABLA: GENEROS
+-- ============================================================
+
 CREATE TABLE IF NOT EXISTS generos (
                                        id_genero INT AUTO_INCREMENT PRIMARY KEY,
                                        nombre VARCHAR(80) NOT NULL UNIQUE
     );
+
+
+-- ============================================================
+-- TABLA: VIDEOJUEGOS
+-- ============================================================
 
 CREATE TABLE IF NOT EXISTS videojuegos (
                                            id_videojuego INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,39 +74,76 @@ CREATE TABLE IF NOT EXISTS videojuegos (
     disponible_compra BOOLEAN NOT NULL DEFAULT TRUE,
     disponible_alquiler BOOLEAN NOT NULL DEFAULT FALSE,
     activo BOOLEAN NOT NULL DEFAULT TRUE,
-    FOREIGN KEY (id_plataforma) REFERENCES plataformas(id_plataforma),
+
+    FOREIGN KEY (id_plataforma)
+    REFERENCES plataformas(id_plataforma),
+
     CHECK (precio_compra IS NULL OR precio_compra >= 0),
     CHECK (precio_alquiler IS NULL OR precio_alquiler >= 0)
     );
 
+
+-- ============================================================
+-- TABLA: VIDEOJUEGOS_GENEROS
+-- ============================================================
+
 CREATE TABLE IF NOT EXISTS videojuegos_generos (
                                                    id_videojuego INT NOT NULL,
                                                    id_genero INT NOT NULL,
+
                                                    PRIMARY KEY (id_videojuego, id_genero),
-    FOREIGN KEY (id_videojuego) REFERENCES videojuegos(id_videojuego),
-    FOREIGN KEY (id_genero) REFERENCES generos(id_genero)
+
+    FOREIGN KEY (id_videojuego)
+    REFERENCES videojuegos(id_videojuego),
+
+    FOREIGN KEY (id_genero)
+    REFERENCES generos(id_genero)
     );
+
+
+-- ============================================================
+-- TABLA: EJEMPLARES
+-- ============================================================
 
 CREATE TABLE IF NOT EXISTS ejemplares (
                                           id_ejemplar INT AUTO_INCREMENT PRIMARY KEY,
                                           id_videojuego INT NOT NULL,
                                           codigo_ejemplar VARCHAR(60) NOT NULL UNIQUE,
+
     estado ENUM('DISPONIBLE', 'ALQUILADO', 'VENDIDO', 'BAJA')
     NOT NULL DEFAULT 'DISPONIBLE',
+
     observaciones VARCHAR(500),
-    FOREIGN KEY (id_videojuego) REFERENCES videojuegos(id_videojuego)
+
+    FOREIGN KEY (id_videojuego)
+    REFERENCES videojuegos(id_videojuego)
     );
+
+
+-- ============================================================
+-- TABLA: PEDIDOS
+-- ============================================================
 
 CREATE TABLE IF NOT EXISTS pedidos (
                                        id_pedido INT AUTO_INCREMENT PRIMARY KEY,
                                        id_usuario INT NOT NULL,
                                        fecha_pedido DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
                                        estado ENUM('PENDIENTE', 'CONFIRMADO', 'COMPLETADO', 'CANCELADO')
     NOT NULL DEFAULT 'PENDIENTE',
+
     importe_total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
+
+    FOREIGN KEY (id_usuario)
+    REFERENCES usuarios(id_usuario),
+
     CHECK (importe_total >= 0)
     );
+
+
+-- ============================================================
+-- TABLA: DETALLES_PEDIDO
+-- ============================================================
 
 CREATE TABLE IF NOT EXISTS detalles_pedido (
                                                id_detalle INT AUTO_INCREMENT PRIMARY KEY,
@@ -81,25 +153,50 @@ CREATE TABLE IF NOT EXISTS detalles_pedido (
                                                codigo_producto VARCHAR(50) NOT NULL,
     codigo_ejemplar VARCHAR(60) NOT NULL,
     nombre_videojuego VARCHAR(200) NOT NULL,
+
     tipo_operacion ENUM('COMPRA', 'ALQUILER') NOT NULL,
+
     precio_unitario DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
-    FOREIGN KEY (id_videojuego) REFERENCES videojuegos(id_videojuego),
-    FOREIGN KEY (id_ejemplar) REFERENCES ejemplares(id_ejemplar),
+
+    FOREIGN KEY (id_pedido)
+    REFERENCES pedidos(id_pedido),
+
+    FOREIGN KEY (id_videojuego)
+    REFERENCES videojuegos(id_videojuego),
+
+    FOREIGN KEY (id_ejemplar)
+    REFERENCES ejemplares(id_ejemplar),
+
     CHECK (precio_unitario >= 0),
+
     INDEX idx_detalles_pedido (id_pedido),
     INDEX idx_detalles_ejemplar (id_ejemplar)
     );
+
+
+-- ============================================================
+-- TABLA: VENTAS
+-- ============================================================
 
 CREATE TABLE IF NOT EXISTS ventas (
                                       id_venta INT AUTO_INCREMENT PRIMARY KEY,
                                       id_detalle INT NOT NULL UNIQUE,
                                       fecha_venta DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                       importe DECIMAL(10,2) NOT NULL,
-    estado ENUM('REGISTRADA', 'ANULADA') NOT NULL DEFAULT 'REGISTRADA',
-    FOREIGN KEY (id_detalle) REFERENCES detalles_pedido(id_detalle),
+
+    estado ENUM('REGISTRADA', 'ANULADA')
+    NOT NULL DEFAULT 'REGISTRADA',
+
+    FOREIGN KEY (id_detalle)
+    REFERENCES detalles_pedido(id_detalle),
+
     CHECK (importe >= 0)
     );
+
+
+-- ============================================================
+-- TABLA: ALQUILERES
+-- ============================================================
 
 CREATE TABLE IF NOT EXISTS alquileres (
                                           id_alquiler INT AUTO_INCREMENT PRIMARY KEY,
@@ -107,10 +204,18 @@ CREATE TABLE IF NOT EXISTS alquileres (
                                           fecha_inicio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                           fecha_devolucion_prevista DATE NOT NULL,
                                           fecha_devolucion_real DATETIME,
+
                                           estado ENUM('ACTIVO', 'DEVUELTO', 'RETRASADO', 'CANCELADO')
     NOT NULL DEFAULT 'ACTIVO',
-    FOREIGN KEY (id_detalle) REFERENCES detalles_pedido(id_detalle)
+
+    FOREIGN KEY (id_detalle)
+    REFERENCES detalles_pedido(id_detalle)
     );
+
+
+-- ============================================================
+-- TABLA: VALORACIONES
+-- ============================================================
 
 CREATE TABLE IF NOT EXISTS valoraciones (
                                             id_valoracion INT AUTO_INCREMENT PRIMARY KEY,
@@ -119,14 +224,22 @@ CREATE TABLE IF NOT EXISTS valoraciones (
                                             puntuacion TINYINT NOT NULL,
                                             critica TEXT,
                                             fecha_valoracion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                            FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
-    FOREIGN KEY (id_videojuego) REFERENCES videojuegos(id_videojuego),
+
+                                            FOREIGN KEY (id_usuario)
+    REFERENCES usuarios(id_usuario),
+
+    FOREIGN KEY (id_videojuego)
+    REFERENCES videojuegos(id_videojuego),
+
     UNIQUE (id_usuario, id_videojuego),
+
     CHECK (puntuacion BETWEEN 1 AND 10)
     );
 
 
-USE roqui_games;
+-- ============================================================
+-- DATOS INICIALES: PLATAFORMAS
+-- ============================================================
 
 INSERT INTO plataformas (nombre) VALUES
                                      ('PC'),
@@ -146,6 +259,11 @@ INSERT INTO plataformas (nombre) VALUES
                                      ('Nintendo Switch'),
                                      ('Sega Mega Drive');
 
+
+-- ============================================================
+-- DATOS INICIALES: GENEROS
+-- ============================================================
+
 INSERT INTO generos (nombre) VALUES
                                  ('Acción'),
                                  ('Aventura'),
@@ -163,25 +281,77 @@ INSERT INTO generos (nombre) VALUES
                                  ('Simulación'),
                                  ('Metroidvania');
 
--- CUENTAS DE PRUEBA PARA DESARROLLO
--- Las contraseñas se guardan como hashes BCrypt, no en texto plano.
--- Carlos:         carlos@example.com       | contraseña: Carlos123 | rol: CLIENTE
--- Laura:          laura@example.com        | contraseña: Laura123  | rol: CLIENTE
--- Miguel:         miguel@example.com       | contraseña: Miguel123 | rol: TENDERO
--- Administrador:  admin@example.com        | contraseña: Admin123  | rol: ADMIN
--- Estas contraseñas son únicamente para pruebas; no reutilizarlas en producción.
+
+-- ============================================================
+-- CUENTAS DE PRUEBA
+-- ============================================================
+-- Carlos:        carlos@example.com | Carlos123 | CLIENTE
+-- Laura:         laura@example.com  | Laura123  | CLIENTE
+-- Miguel:        miguel@example.com | Miguel123 | TENDERO
+-- Administrador: admin@example.com  | Admin123  | ADMIN
+--
+-- Las contraseñas se mantienen con sus hashes BCrypt originales.
+-- email_hash queda NULL hasta implementar el HMAC en Java.
+-- Los datos personales todavía no están cifrados.
+-- ============================================================
+
 INSERT INTO usuarios
-(nombre, apellidos, email, password, rol)
+(nombre, apellidos, nick, email, email_hash, password, rol)
 VALUES
-    ('Carlos', 'Pérez López', 'carlos@example.com', '$2y$10$A.fUQOO3aXL6nZv0HmHqsO1tReranIUzizepCXFTSlv0Uig/weZjG', 'CLIENTE'),
-    ('Laura', 'García Martín', 'laura@example.com', '$2y$10$JuG34YJGsENNs4TCyfCrHOgOqA9EVpfU9tElBR9qMOHcqxW8Wr3y.', 'CLIENTE'),
-    ('Miguel', 'Sánchez Ruiz', 'miguel@example.com', '$2y$10$MS9Q2BpSPI8khOdHobTt8.iMIBmIX9IqTHJ9tkMxkDQ87NH4TK.uC', 'TENDERO'),
-    ('Administrador', 'Roqui Games', 'admin@example.com', '$2y$10$L6/8RDIxcDV2ux1.PaQtJOWEuZemNrAHhE0azaZjeT2VpJQ6RusAm', 'ADMIN');
+    (
+        'Carlos',
+        'Pérez López',
+        'CarlosRetro',
+        'carlos@example.com',
+        NULL,
+        '$2y$10$A.fUQOO3aXL6nZv0HmHqsO1tReranIUzizepCXFTSlv0Uig/weZjG',
+        'CLIENTE'
+    ),
+    (
+        'Laura',
+        'García Martín',
+        'LauraRetro',
+        'laura@example.com',
+        NULL,
+        '$2y$10$JuG34YJGsENNs4TCyfCrHOgOqA9EVpfU9tElBR9qMOHcqxW8Wr3y.',
+        'CLIENTE'
+    ),
+    (
+        'Miguel',
+        'Sánchez Ruiz',
+        'MiguelTienda',
+        'miguel@example.com',
+        NULL,
+        '$2y$10$MS9Q2BpSPI8khOdHobTt8.iMIBmIX9IqTHJ9tkMxkDQ87NH4TK.uC',
+        'TENDERO'
+    ),
+    (
+        'Administrador',
+        'Roqui Games',
+        'AdminRoqui',
+        'admin@example.com',
+        NULL,
+        '$2y$10$L6/8RDIxcDV2ux1.PaQtJOWEuZemNrAHhE0azaZjeT2VpJQ6RusAm',
+        'ADMIN'
+    );
+
+
+-- ============================================================
+-- DATOS INICIALES: VIDEOJUEGOS
+-- ============================================================
 
 INSERT INTO videojuegos
-(codigo_producto, titulo, descripcion, anio_lanzamiento,
- id_plataforma, precio_compra, precio_alquiler,
- disponible_compra, disponible_alquiler)
+(
+    codigo_producto,
+    titulo,
+    descripcion,
+    anio_lanzamiento,
+    id_plataforma,
+    precio_compra,
+    precio_alquiler,
+    disponible_compra,
+    disponible_alquiler
+)
 VALUES
     (
         'NES-MARIO-001',
@@ -220,6 +390,11 @@ VALUES
         2004, 13, 45.00, 8.00, TRUE, TRUE
     );
 
+
+-- ============================================================
+-- RELACION: VIDEOJUEGOS Y GENEROS
+-- ============================================================
+
 INSERT INTO videojuegos_generos (id_videojuego, id_genero) VALUES
                                                                (1, 3),
                                                                (2, 2),
@@ -231,15 +406,27 @@ INSERT INTO videojuegos_generos (id_videojuego, id_genero) VALUES
                                                                (6, 4),
                                                                (6, 2);
 
-INSERT INTO ejemplares (id_videojuego, codigo_ejemplar, estado) VALUES
-                                                                    (1, 'EJ-MARIO-001', 'DISPONIBLE'),
-                                                                    (1, 'EJ-MARIO-002', 'DISPONIBLE'),
-                                                                    (2, 'EJ-ZELDA-001', 'DISPONIBLE'),
-                                                                    (3, 'EJ-GTA-001', 'DISPONIBLE'),
-                                                                    (3, 'EJ-GTA-002', 'DISPONIBLE'),
-                                                                    (4, 'EJ-SONIC-001', 'DISPONIBLE'),
-                                                                    (5, 'EJ-DOOM-001', 'DISPONIBLE'),
-                                                                    (6, 'EJ-POKEMON-001', 'DISPONIBLE');
+
+-- ============================================================
+-- DATOS INICIALES: EJEMPLARES
+-- ============================================================
+
+INSERT INTO ejemplares
+(id_videojuego, codigo_ejemplar, estado)
+VALUES
+    (1, 'EJ-MARIO-001', 'DISPONIBLE'),
+    (1, 'EJ-MARIO-002', 'DISPONIBLE'),
+    (2, 'EJ-ZELDA-001', 'DISPONIBLE'),
+    (3, 'EJ-GTA-001', 'DISPONIBLE'),
+    (3, 'EJ-GTA-002', 'DISPONIBLE'),
+    (4, 'EJ-SONIC-001', 'DISPONIBLE'),
+    (5, 'EJ-DOOM-001', 'DISPONIBLE'),
+    (6, 'EJ-POKEMON-001', 'DISPONIBLE');
+
+
+-- ============================================================
+-- DATOS INICIALES: PEDIDOS
+-- ============================================================
 
 INSERT INTO pedidos
 (id_usuario, fecha_pedido, estado, importe_total)
@@ -247,25 +434,73 @@ VALUES
     (1, '2026-10-20 12:00:00', 'COMPLETADO', 43.00),
     (2, '2026-10-21 16:30:00', 'COMPLETADO', 4.00);
 
-INSERT INTO detalles_pedido
-(id_pedido, id_videojuego, id_ejemplar, codigo_producto,
- codigo_ejemplar, nombre_videojuego, tipo_operacion, precio_unitario)
-VALUES
-    (1, 1, 1, 'NES-MARIO-001', 'EJ-MARIO-001',
-     'Super Mario Bros.', 'COMPRA', 25.00),
-    (1, 4, 6, 'MD-SONIC-001', 'EJ-SONIC-001',
-     'Sonic the Hedgehog', 'COMPRA', 18.00),
-    (2, 3, 4, 'PS2-GTA-001', 'EJ-GTA-001',
-     'Grand Theft Auto: San Andreas', 'ALQUILER', 4.00);
 
-INSERT INTO ventas (id_detalle, fecha_venta, importe, estado) VALUES
-                                                                  (1, '2026-10-20 12:00:00', 25.00, 'REGISTRADA'),
-                                                                  (2, '2026-10-20 12:00:00', 18.00, 'REGISTRADA');
+-- ============================================================
+-- DATOS INICIALES: DETALLES_PEDIDO
+-- ============================================================
+
+INSERT INTO detalles_pedido
+(
+    id_pedido,
+    id_videojuego,
+    id_ejemplar,
+    codigo_producto,
+    codigo_ejemplar,
+    nombre_videojuego,
+    tipo_operacion,
+    precio_unitario
+)
+VALUES
+    (
+        1, 1, 1,
+        'NES-MARIO-001',
+        'EJ-MARIO-001',
+        'Super Mario Bros.',
+        'COMPRA',
+        25.00
+    ),
+    (
+        1, 4, 6,
+        'MD-SONIC-001',
+        'EJ-SONIC-001',
+        'Sonic the Hedgehog',
+        'COMPRA',
+        18.00
+    ),
+    (
+        2, 3, 4,
+        'PS2-GTA-001',
+        'EJ-GTA-001',
+        'Grand Theft Auto: San Andreas',
+        'ALQUILER',
+        4.00
+    );
+
+
+-- ============================================================
+-- DATOS INICIALES: VENTAS
+-- ============================================================
+
+INSERT INTO ventas
+(id_detalle, fecha_venta, importe, estado)
+VALUES
+    (1, '2026-10-20 12:00:00', 25.00, 'REGISTRADA'),
+    (2, '2026-10-20 12:00:00', 18.00, 'REGISTRADA');
+
+
+-- ============================================================
+-- DATOS INICIALES: ALQUILERES
+-- ============================================================
 
 INSERT INTO alquileres
 (id_detalle, fecha_inicio, fecha_devolucion_prevista, estado)
 VALUES
     (3, '2026-10-21 16:30:00', '2026-10-28', 'ACTIVO');
+
+
+-- ============================================================
+-- ACTUALIZACION DEL ESTADO DE LOS EJEMPLARES
+-- ============================================================
 
 UPDATE ejemplares
 SET estado = 'VENDIDO'
@@ -275,9 +510,23 @@ UPDATE ejemplares
 SET estado = 'ALQUILADO'
 WHERE id_ejemplar = 4;
 
+
+-- ============================================================
+-- DATOS INICIALES: VALORACIONES
+-- ============================================================
+
 INSERT INTO valoraciones
 (id_usuario, id_videojuego, puntuacion, critica)
 VALUES
-    (1, 1, 9, 'Un clásico de plataformas que sigue siendo divertido décadas después. Su diseño de niveles es sencillo de entender, pero exige precisión y buenos reflejos para superar las últimas fases.'),
-    (2, 3, 8, 'Un mundo abierto enorme para su época, con muchas actividades y una historia memorable. La libertad para explorar las ciudades y el campo hace que siempre haya algo distinto que hacer.'),
-    (1, 2, 10, 'Una aventura sobresaliente por la variedad de sus mazmorras, los secretos que esconde Hyrule y la forma en que introduce nuevas herramientas para descubrir zonas antes inaccesibles.');
+    (
+        1, 1, 9,
+        'Un clásico de plataformas que sigue siendo divertido décadas después. Su diseño de niveles es sencillo de entender, pero exige precisión y buenos reflejos para superar las últimas fases.'
+    ),
+    (
+        2, 3, 8,
+        'Un mundo abierto enorme para su época, con muchas actividades y una historia memorable. La libertad para explorar las ciudades y el campo hace que siempre haya algo distinto que hacer.'
+    ),
+    (
+        1, 2, 10,
+        'Una aventura sobresaliente por la variedad de sus mazmorras, los secretos que esconde Hyrule y la forma en que introduce nuevas herramientas para descubrir zonas antes inaccesibles.'
+    );
