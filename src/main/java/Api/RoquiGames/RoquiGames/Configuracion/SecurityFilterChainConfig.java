@@ -18,6 +18,8 @@ public class SecurityFilterChainConfig {
                 .csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/cliente/**").hasRole("CLIENTE")
+                        .requestMatchers("/api/tienda/**").hasAnyRole("TENDERO", "ADMIN")
                         .requestMatchers(
                         "/api/login",
                         "/api/usuarios/registro",
