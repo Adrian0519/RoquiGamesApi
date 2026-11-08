@@ -7,6 +7,16 @@ http://localhost:8080/api/login
 }
 -------------------------------------------------------------------------------
 
+POST
+-------------------------------------------------------------------------------
+http://localhost:8080/api/usuarios/registro
+{
+    "nombre": "abc",
+    "apellidos": "abc",
+    "email": "abc@example.com",
+    "nick": "AnaGamer",
+    "password": "abc"
+}
 
 Siguientes pasos por confirmar
 
