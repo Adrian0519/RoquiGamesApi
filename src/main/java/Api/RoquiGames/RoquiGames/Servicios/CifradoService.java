@@ -24,6 +24,8 @@ public class CifradoService {
     private final SecretKeySpec claveAES;
     private final SecretKeySpec claveHMAC;
 
+    private static final String PREFIJO_CIFRADO = "ENC:";
+
     private final SecureRandom secureRandom = new SecureRandom();
 
     public CifradoService() {

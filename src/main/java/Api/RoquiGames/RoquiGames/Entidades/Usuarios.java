@@ -29,13 +29,13 @@ public class Usuarios implements UserDetails {
     @Column(name = "id_usuario")
     private Integer id_usuario;
 
-    @Column(nullable = false, length = 512)
+    @Column(nullable = false, length = 3072)
     private String nombre;
 
-    @Column(length = 512)
+    @Column(length = 3072)
     private String apellidos;
 
-    @Column(nullable = false, length = 512)
+    @Column(nullable = false, length = 3072)
     private String email;
 
     @Column(name = "email_hash", nullable = false, unique = true, length = 64)
