@@ -3,6 +3,7 @@ package Api.RoquiGames.RoquiGames.Servicios;
 import Api.RoquiGames.RoquiGames.DTO.LoginDTO;
 import Api.RoquiGames.RoquiGames.DTO.LoginRespuestaDTO;
 import Api.RoquiGames.RoquiGames.Entidades.Usuarios;
+import Api.RoquiGames.RoquiGames.Excepciones.CredencialesInvalidasException;
 import Api.RoquiGames.RoquiGames.Repositorios.UsuariosRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,11 +30,11 @@ public class LoginService {
         Usuarios usuario = usuariosRepository.findByEmailHash(emailHash)
                 .orElseThrow(() -> new RuntimeException("Correo no encontrado"));
         if (!usuario.getActivo()) {
-            throw new RuntimeException("La cuenta esta desactivada");
+            throw new CredencialesInvalidasException("La cuenta esta desactivada");
         }
 
         if (!passwordEncoder.matches(loginDTO.getPassword(), usuario.getPassword())) {
-            throw new RuntimeException("Contrasena incorrecta");
+            throw new CredencialesInvalidasException("Contrasena incorrecta");
         }
 
         String token = jwtService.generarToken(usuario);

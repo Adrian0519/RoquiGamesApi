@@ -3,6 +3,7 @@ package Api.RoquiGames.RoquiGames.Servicios;
 import Api.RoquiGames.RoquiGames.DTO.PerfilUsuarioDTO;
 import Api.RoquiGames.RoquiGames.DTO.RegistrarUsuarioDTO;
 import Api.RoquiGames.RoquiGames.Entidades.Usuarios;
+import Api.RoquiGames.RoquiGames.Excepciones.RecursoDuplicadoException;
 import Api.RoquiGames.RoquiGames.Repositorios.UsuariosRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,10 +35,10 @@ public class UsuariosService {
     public PerfilUsuarioDTO registrar(RegistrarUsuarioDTO registrarUsuarioDTO){
         String mailHash=cifradoService.generarHashEmail(registrarUsuarioDTO.getEmail());
         if (usuariosRepository.findByEmailHash(mailHash).isPresent()) {
-            throw new RuntimeException("El email ya está registrado");
+            throw new RecursoDuplicadoException("El email ya esta registrado");
         }
         if (usuariosRepository.findByNick(registrarUsuarioDTO.getNick()).isPresent()) {
-            throw new RuntimeException("Ya hay un usuario con esos datos");
+            throw new RecursoDuplicadoException("Ya hay un usario con ese nick");
         }
 
         Usuarios usuarios= new Usuarios();
