@@ -3,6 +3,7 @@ package Api.RoquiGames.RoquiGames.Controladores;
 import Api.RoquiGames.RoquiGames.DTO.MostrarVideojuegoDTO;
 import Api.RoquiGames.RoquiGames.Servicios.VideojuegosService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,5 +22,10 @@ public class VideojuegosController {
     @GetMapping
     public List<MostrarVideojuegoDTO>listarVideojuegos(){
         return videojuegosService.listarVideojuegos();
+    }
+
+    @GetMapping("/{id}")
+    public MostrarVideojuegoDTO mostrarVideojuego(@PathVariable Integer id){
+        return videojuegosService.obtenerVideojuego(id);
     }
 }

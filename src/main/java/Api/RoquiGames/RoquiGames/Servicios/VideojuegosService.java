@@ -2,11 +2,13 @@ package Api.RoquiGames.RoquiGames.Servicios;
 
 import Api.RoquiGames.RoquiGames.DTO.MostrarVideojuegoDTO;
 import Api.RoquiGames.RoquiGames.Entidades.Videojuegos;
+import Api.RoquiGames.RoquiGames.Excepciones.RecursoNoEncontradoException;
 import Api.RoquiGames.RoquiGames.Repositorios.VideojuegosRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VideojuegosService {
@@ -46,6 +48,19 @@ public class VideojuegosService {
         }
 
         return resultado;
+
+    }
+
+    public MostrarVideojuegoDTO obtenerVideojuego(Integer idVideojuego) {
+
+        Videojuegos videojuego = videojuegosRepository.findById(idVideojuego)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El videojuego no existe"));
+
+        if (!videojuego.getActivo()) {
+            throw new RecursoNoEncontradoException("El videojuego no existe");
+        }
+
+        return convertirADTO(videojuego);
 
     }
 }

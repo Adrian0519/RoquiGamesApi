@@ -17,7 +17,9 @@ http://localhost:8080/api/usuarios/registro
     "nick": "AnaGamer",
     "password": "abc"
 }
+-------------------------------------------------------------------------------
 
-Siguientes pasos por confirmar
+GET
+http://localhost:8080/api/videojuegos/1
+-------------------------------------------------------------------------------
 
-Crear una ruta de prueba protegida.
