@@ -67,3 +67,28 @@ GET  →  Filtro: todo combinado (solo Zelda)
 -------------------------------------------------------------------------------
 http://localhost:8080/api/videojuegos?plataforma=Super%20Nintendo&plataforma=Game%20Boy%20Advance&genero=Rol%20(RPG)&modalidad=alquiler&precioMax=7
 -------------------------------------------------------------------------------
+
+POST  →  Comprar (200 + ticket con total y líneas, estado CONFIRMADO)
+-------------------------------------------------------------------------------
+http://localhost:8080/api/cliente/pedidos
+Authorization → Bearer Token → (token del login)
+{
+    "lineas": [
+        { "idVideojuego": 2, "tipo": "COMPRA" },
+        { "idVideojuego": 6, "tipo": "COMPRA" }
+    ]
+}
+-------------------------------------------------------------------------------
+
+POST  →  Repetir la compra sin stock (409 "No quedan ejemplares de ...")
+-------------------------------------------------------------------------------
+http://localhost:8080/api/cliente/pedidos
+Authorization → Bearer Token → (token del login)
+{
+    "lineas": [
+        { "idVideojuego": 2, "tipo": "COMPRA" },
+        { "idVideojuego": 6, "tipo": "COMPRA" }
+    ]
+}
+-------------------------------------------------------------------------------
+

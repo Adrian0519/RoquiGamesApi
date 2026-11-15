@@ -1,6 +1,7 @@
 package Api.RoquiGames.RoquiGames.Controladores;
 
 import Api.RoquiGames.RoquiGames.Excepciones.CredencialesInvalidasException;
+import Api.RoquiGames.RoquiGames.Excepciones.PeticionInvalidaException;
 import Api.RoquiGames.RoquiGames.Excepciones.RecursoDuplicadoException;
 import Api.RoquiGames.RoquiGames.Excepciones.RecursoNoEncontradoException;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,14 @@ public class ExceppcionesController {
 
         Map<String, String> cuerpo = Map.of("error", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(cuerpo);
+
+    }
+
+    @ExceptionHandler(PeticionInvalidaException.class)
+    public ResponseEntity<Map<String, String>> manejarPeticionInvalida(PeticionInvalidaException ex) {
+
+        Map<String, String> cuerpo = Map.of("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(cuerpo);
 
     }
 
