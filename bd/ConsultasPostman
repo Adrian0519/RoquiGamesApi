@@ -92,3 +92,12 @@ Authorization → Bearer Token → (token del login)
 }
 -------------------------------------------------------------------------------
 
+POST
+-------------------------------------------------------------------------------
+http://localhost:8080/api/cliente/pedidos
+
+{
+  "lineas": [
+    { "idVideojuego": 3, "tipo": "ALQUILER", "dias": 7 }
+  ]
+}

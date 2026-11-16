@@ -1,0 +1,28 @@
+2026-10-25  first commit y problemas con el proyecto Arreglados
+2026-10-25  Creada la bd
+2026-11-01  Entiades mapeadas
+2026-11-01  Conexion prueba y entidad parcheada
+2026-11-01  Algunas DTO creadas
+2026-11-01  Mas DTO creadas
+2026-11-01  Error corregido
+2026-11-01  Dto mostrar valoraciones
+2026-11-02  BCrypt agregado al pom
+2026-11-02  Avanzando en el login y preparando un JWT
+2026-11-02  Error en el encryp parcheado y avanzando con los tokens
+2026-11-02  Login funcionando
+2026-11-02  BD corregida
+2026-11-02  Devuelve token
+2026-11-02  Agregado una consulta postMan y archivos temporales para la tutoria
+2026-11-02  Duda anotada
+2026-11-05  El metodo de jwt para probar a validarlo y error en el tipo de error corregido
+2026-11-05  Funcionando admin y cliente
+2026-11-05  Permisos tendero y cliente
+2026-11-05  Implementando cifrado d datos sensibles
+2026-11-05  BD Cambiada otra vez y finalizada la incriptacion
+2026-11-08  BD bien actualizada y ObtenerPerfil
+2026-11-08  Registrarse y dto q no se usaban eliminadas para mas claridad
+2026-11-09  Mostramos listado videojuegos
+2026-11-14  Mensajes de error creados para correos y nicks repetidos ademas de  contrasenas incorrectas
+2026-11-15  Obtener videojuego por id
+2026-11-15  Filtros en la busqueda
+2026-11-15  Se pueden realizar compras pendiente de pasarela de pago

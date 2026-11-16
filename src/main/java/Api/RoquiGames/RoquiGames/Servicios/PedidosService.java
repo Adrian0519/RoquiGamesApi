@@ -30,13 +30,15 @@ public class PedidosService {
     private final VideojuegosRepository videojuegosRepository;
     private final EjemplaresService ejemplaresService;
     private final VentasService ventasService;
+    private final AlquileresService alquileresService;
 
-    public PedidosService(PedidosRepository pedidosRepository, DetallesPedidoRepository detallesPedidoRepository, VideojuegosRepository videojuegosRepository, EjemplaresService ejemplaresService, VentasService ventasService) {
+    public PedidosService(PedidosRepository pedidosRepository, DetallesPedidoRepository detallesPedidoRepository, VideojuegosRepository videojuegosRepository, EjemplaresService ejemplaresService, VentasService ventasService, AlquileresService alquileresService) {
         this.pedidosRepository = pedidosRepository;
         this.detallesPedidoRepository = detallesPedidoRepository;
         this.videojuegosRepository = videojuegosRepository;
         this.ejemplaresService = ejemplaresService;
         this.ventasService = ventasService;
+        this.alquileresService = alquileresService;
     }
 
     private void validarCarrito(CrearPedidoDTO crearPedidoDTO) {
@@ -108,7 +110,7 @@ public class PedidosService {
             return procesarCompra(pedido, videojuego);
         }
 
-        throw new PeticionInvalidaException("Alquiler aún no disponible");
+        return procesarAlquiler(pedido, videojuego, linea.getDias());
     }
 
 
@@ -162,5 +164,24 @@ public class PedidosService {
         }
         confirmarPedido(pedidos,detallesPedidoList);
         return convertirARespuesta(pedidos,detallesPedidoList);
+    }
+
+    private DetallesPedido procesarAlquiler(Pedidos pedido, Videojuegos videojuego, Integer dias){
+
+        if (dias == null || dias <= 0) {
+            throw new PeticionInvalidaException("Los dias de alquiler no pueden ser 0");
+        }
+
+        if (!videojuego.getDisponible_alquiler()){
+            throw new PeticionInvalidaException("El juego no se puede alquilar");
+        }
+
+        Ejemplares ejemplar= ejemplaresService.reservarEjemplar(videojuego, EstadoEjemplar.ALQUILADO);
+        BigDecimal precioTotal = videojuego.getPrecio_alquiler().multiply(BigDecimal.valueOf(dias));
+        DetallesPedido detalle = crearDetalle(pedido, videojuego, ejemplar, TipoOperacion.ALQUILER, precioTotal);
+        alquileresService.registrarAlquiler(detalle,dias);
+
+        return detalle;
+
     }
 }
