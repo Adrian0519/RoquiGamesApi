@@ -24,5 +24,11 @@ public class EjemplaresService {
 
     }
 
+    public Ejemplares liberarEjemplar(Ejemplares ejemplar) {
 
+        ejemplar.setEstado(EstadoEjemplar.DISPONIBLE);
+
+        return ejemplaresRepository.save(ejemplar);
+
+    }
 }

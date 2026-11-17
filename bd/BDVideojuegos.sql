@@ -151,7 +151,11 @@ CREATE TABLE alquileres (
                             fecha_devolucion_real DATETIME,
                             estado ENUM('ACTIVO', 'DEVUELTO', 'RETRASADO', 'CANCELADO')
         NOT NULL DEFAULT 'ACTIVO',
-                            FOREIGN KEY (id_detalle) REFERENCES detalles_pedido(id_detalle)
+                            fianza DECIMAL(10,2) NOT NULL DEFAULT 10.00,
+                            recargo DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                            FOREIGN KEY (id_detalle) REFERENCES detalles_pedido(id_detalle),
+                            CHECK (fianza >= 0),
+                            CHECK (recargo >= 0)
 );
 
 -- ============================================================
@@ -225,37 +229,37 @@ INSERT INTO usuarios
 (nombre, apellidos, nick, email, email_hash, password, rol)
 VALUES
     (
-        'Carlos',
-        'Pérez López',
+        'PSqef+oKx4gpWCnO/lLH27qjRXqBRdZiANQsGXXdopRoMg==',
+        'KaPh8ozZLp7U6I59o3lrhVDHgttFgt19IY88B4Xo6rINMXty+VGLeeA=',
         'CarlosRetro',
-        'carlos@example.com',
+        'rpkLmf6L3frqtABKUfizIvq3+PJhOMxisZ2g+n6z3yjVSgUR+4gEhv0yVprsjA==',
         'c3f5e7ffdfdf8751907378864c086699cd0ff3e06a54792ee244018772c88942',
         '$2y$10$A.fUQOO3aXL6nZv0HmHqsO1tReranIUzizepCXFTSlv0Uig/weZjG',
         'CLIENTE'
     ),
     (
-        'Laura',
-        'García Martín',
+        'vW+gmYaVn3ADpkbQf3VLGxAjg+4RWa+iJJ3TwOlP/Qka',
+        'H/4P13/AiNrhF7VxvYWChRBvgGYC0L8rROPEpOD/cLU+GV2uH2dEZDN8Vg==',
         'LauraRetro',
-        'laura@example.com',
+        'T6aWWqgSc3fH6d425Zby1ndPLcMkIwCU9xnJ2fT9vE1msRQjV+IGL9iuHt+P',
         'c9a3a07c6bbfa2eebec50ce139fc6c59bffed4bc177faf2193b6fa05240b0213',
         '$2y$10$JuG34YJGsENNs4TCyfCrHOgOqA9EVpfU9tElBR9qMOHcqxW8Wr3y.',
         'CLIENTE'
     ),
     (
-        'Miguel',
-        'Sánchez Ruiz',
+        'fwK7kICnw8MLfxY6UtkTwJD0e9w44evFtwA3KHdS4faePg==',
+        'P+dwctirKB46sCNEDlQhnuCJ/XXLlSiGNaCpag/Q5tDaxxbTnAsEkgc=',
         'MiguelTienda',
-        'miguel@example.com',
+        'ycZNkZF6jiXm+TqgIrIvgymUJVOxrivynTD9HEufR1Nknq3bahMu7xtnhFox2g==',
         '90600c68e07a635589f3f492e594311e90dc328b16d6fd2cf45bab479150607f',
         '$2y$10$MS9Q2BpSPI8khOdHobTt8.iMIBmIX9IqTHJ9tkMxkDQ87NH4TK.uC',
         'TENDERO'
     ),
     (
-        'Administrador',
-        'Roqui Games',
+        'rj7A1xb/RV3l5TZH3aZAImc6fKydjeOwklkl8tMU3GQ3Bbmm+5awKt0=',
+        '9A/EyqbvZ3Q5FmYQLf6N95J07zN/n68arxICMmfR1sezK6uNS5eq',
         'AdminRoqui',
-        'admin@example.com',
+        'bEgXxoVCJ0zyJFizkogBSUgjNZySrUmvoWpAjfyBLuUNdaQy/zbzpKv+T7Ix',
         '62108bbd6255ad4ced93b33d9b5fc5d4a42f852f1edbfac8f1bef8c7c557fd4d',
         '$2y$10$L6/8RDIxcDV2ux1.PaQtJOWEuZemNrAHhE0azaZjeT2VpJQ6RusAm',
         'ADMIN'

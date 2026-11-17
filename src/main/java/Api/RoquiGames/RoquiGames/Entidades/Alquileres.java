@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -38,6 +39,12 @@ public class Alquileres {
 
     @Column(name = "fecha_devolucion_real")
     private LocalDateTime fecha_devolucion_real;
+
+    @Column(name = "fianza", insertable = false, updatable = false)
+    private BigDecimal fianza;
+
+    @Column(name = "recargo", insertable = false)
+    private BigDecimal recargo;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
