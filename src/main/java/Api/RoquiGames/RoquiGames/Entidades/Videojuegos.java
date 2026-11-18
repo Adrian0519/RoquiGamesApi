@@ -25,7 +25,7 @@ public class Videojuegos {
     private Integer id_videojuego;
 
     @Column(name = "codigo_producto", nullable = false, unique = true, length = 50)
-    private String codigo_producto;
+    private String codigoProducto;
 
     @Column(nullable = false, length = 200)
     private String titulo;

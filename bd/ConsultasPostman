@@ -101,3 +101,27 @@ http://localhost:8080/api/cliente/pedidos
     { "idVideojuego": 3, "tipo": "ALQUILER", "dias": 7 }
   ]
 }
+-------------------------------------------------------------------------------
+
+POST
+-------------------------------------------------------------------------------
+http://localhost:8080/api/tienda/videojuegos
+
+{
+  "codigoProducto": "SNES-MARIOW-001",
+  "titulo": "Super Mario World",
+  "descripcion": "Plataformas clásico de Super Nintendo.",
+  "anioLanzamiento": 1990,
+  "idPlataforma": 10,
+  "precioCompra": 30.00,
+  "precioAlquiler": 6.00,
+  "disponibleCompra": true,
+  "disponibleAlquiler": true,
+  "idsGeneros": [2, 3]
+}
+-------------------------------------------------------------------------------
+
+PUT
+
+http://localhost:8080/api/tienda/alquileres/1/devolucion
+-------------------------------------------------------------------------------

@@ -82,7 +82,7 @@ public class PedidosService {
        detallesPedido.setEjemplares(ejemplar);
        detallesPedido.setTipo_operacion(tipo);
        detallesPedido.setPrecio_unitario(precio);
-       detallesPedido.setCodigo_producto(videojuego.getCodigo_producto());
+       detallesPedido.setCodigo_producto(videojuego.getCodigoProducto());
        detallesPedido.setNombre_videojuego(videojuego.getTitulo());
        detallesPedido.setCodigo_ejemplar(ejemplar.getCodigo_ejemplar());
 

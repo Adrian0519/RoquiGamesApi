@@ -1,12 +1,19 @@
 package Api.RoquiGames.RoquiGames.Servicios;
 
+import Api.RoquiGames.RoquiGames.DTO.CrearVideojuegoDTO;
 import Api.RoquiGames.RoquiGames.DTO.MostrarVideojuegoDTO;
-import Api.RoquiGames.RoquiGames.Entidades.Videojuegos;
+import Api.RoquiGames.RoquiGames.Entidades.*;
 import Api.RoquiGames.RoquiGames.Especificaciones.VideojuegosSpecifications;
+import Api.RoquiGames.RoquiGames.Excepciones.PeticionInvalidaException;
+import Api.RoquiGames.RoquiGames.Excepciones.RecursoDuplicadoException;
 import Api.RoquiGames.RoquiGames.Excepciones.RecursoNoEncontradoException;
+import Api.RoquiGames.RoquiGames.Repositorios.GenerosRepository;
+import Api.RoquiGames.RoquiGames.Repositorios.PlataformasRepository;
+import Api.RoquiGames.RoquiGames.Repositorios.VideojuegosGenerosRepository;
 import Api.RoquiGames.RoquiGames.Repositorios.VideojuegosRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -16,9 +23,15 @@ import java.util.List;
 public class VideojuegosService {
 
     private VideojuegosRepository videojuegosRepository;
+    private PlataformasRepository plataformasRepository;
+    private GenerosRepository generosRepository;
+    private VideojuegosGenerosRepository videojuegosGenerosRepository;
 
-    public VideojuegosService(VideojuegosRepository videojuegosRepository) {
+    public VideojuegosService(VideojuegosRepository videojuegosRepository, PlataformasRepository plataformasRepository, GenerosRepository generosRepository, VideojuegosGenerosRepository videojuegosGenerosRepository) {
         this.videojuegosRepository = videojuegosRepository;
+        this.plataformasRepository = plataformasRepository;
+        this.generosRepository = generosRepository;
+        this.videojuegosGenerosRepository = videojuegosGenerosRepository;
     }
 
     private MostrarVideojuegoDTO convertirADTO(Videojuegos videojuegos) {
@@ -121,4 +134,83 @@ public class VideojuegosService {
         return convertirADTO(videojuego);
 
     }
+
+    @Transactional
+    public MostrarVideojuegoDTO  crearVideojuego(CrearVideojuegoDTO crearVideojuegoDTO) {
+
+        if (crearVideojuegoDTO.getTitulo()==null || crearVideojuegoDTO.getIdPlataforma()==null || crearVideojuegoDTO.getCodigoProducto()==null || crearVideojuegoDTO.getIdsGeneros() == null || crearVideojuegoDTO.getIdsGeneros().isEmpty()){
+
+            throw new PeticionInvalidaException("El titulo , la plataforma y el codigo de producto son obligatorios ");
+
+        }
+
+        if (Boolean.TRUE.equals(crearVideojuegoDTO.getDisponibleAlquiler()) && crearVideojuegoDTO.getPrecioAlquiler() == null) {
+
+            throw new PeticionInvalidaException("No puedes poner un juego a alquilar sin precio");
+
+        }
+
+        if (Boolean.TRUE.equals(crearVideojuegoDTO.getDisponibleCompra()) && crearVideojuegoDTO.getPrecioCompra() == null) {
+
+            throw new PeticionInvalidaException("No puedes poner un juego a vender sin precio");
+
+        }
+
+        if (videojuegosRepository.findByCodigoProducto(crearVideojuegoDTO.getCodigoProducto()).isPresent()) {
+            throw new RecursoDuplicadoException("El codigo del producto esta duplicado");
+        }
+
+        if (!plataformasRepository.existsById(crearVideojuegoDTO.getIdPlataforma())) {
+
+            throw new RecursoNoEncontradoException("Esa id no concuerda con ninguna existente");
+
+        }
+
+        Plataformas plataforma=plataformasRepository.getReferenceById(crearVideojuegoDTO.getIdPlataforma());
+
+        Videojuegos videojuego=new Videojuegos();
+        videojuego.setCodigoProducto(crearVideojuegoDTO.getCodigoProducto());
+        videojuego.setTitulo(crearVideojuegoDTO.getTitulo());
+        videojuego.setDescripcion(crearVideojuegoDTO.getDescripcion());
+        videojuego.setAnio_lanzamiento(crearVideojuegoDTO.getAnioLanzamiento());
+        videojuego.setPlataforma(plataforma);
+        videojuego.setPrecio_compra(crearVideojuegoDTO.getPrecioCompra());
+        videojuego.setPrecio_alquiler(crearVideojuegoDTO.getPrecioAlquiler());
+
+        if (crearVideojuegoDTO.getDisponibleCompra() != null) {
+            videojuego.setDisponible_compra(crearVideojuegoDTO.getDisponibleCompra());
+        }
+
+        if (crearVideojuegoDTO.getDisponibleAlquiler() != null) {
+            videojuego.setDisponible_alquiler(crearVideojuegoDTO.getDisponibleAlquiler());
+        }
+
+        videojuegosRepository.save(videojuego);
+
+        List<VideojuegosGeneros> listaGeneros = new ArrayList<>();
+        for (int i = 0; i < crearVideojuegoDTO.getIdsGeneros().size(); i++) {
+            Integer idGenero = crearVideojuegoDTO.getIdsGeneros().get(i);
+
+            if (generosRepository.findById(idGenero).isEmpty()) {
+
+                throw new RecursoNoEncontradoException("La id del genero no esta registrada");
+
+            }
+
+            Generos genero = generosRepository.findById(idGenero).get();
+
+            VideojuegosGeneros videojuegosGeneros = new VideojuegosGeneros();
+            videojuegosGeneros.setId(new VideojuegosGenerosId(videojuego.getId_videojuego(), genero.getId_genero()));
+            videojuegosGeneros.setVideojuegos(videojuego);
+            videojuegosGeneros.setGeneros(genero);
+
+            listaGeneros.add(videojuegosGenerosRepository.save(videojuegosGeneros));
+
+        }
+
+        videojuego.setVideojuegos_generos(listaGeneros);
+        return convertirADTO(videojuego);
+    }
+
+
 }
