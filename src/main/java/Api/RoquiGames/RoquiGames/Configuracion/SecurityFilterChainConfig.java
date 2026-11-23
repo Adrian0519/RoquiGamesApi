@@ -38,7 +38,8 @@ public class SecurityFilterChainConfig {
                         "/api/videojuegos/**",
                         "/api/plataformas/**",
                         "/api/generos/**",
-                        "/api/valoraciones/**"
+                        "/api/valoraciones/**",
+                                "/imagenes/**"
                 ).permitAll().anyRequest().authenticated()).addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class

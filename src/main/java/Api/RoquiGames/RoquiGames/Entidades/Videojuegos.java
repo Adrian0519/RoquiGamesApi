@@ -36,6 +36,9 @@ public class Videojuegos {
     @Column(name = "anio_lanzamiento", columnDefinition = "year")
     private Integer anio_lanzamiento;
 
+    @Column(name = "imagen", length = 255)
+    private String imagen;
+
     @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "id_plataforma", nullable = false)

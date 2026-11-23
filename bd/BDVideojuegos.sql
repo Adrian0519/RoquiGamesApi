@@ -57,6 +57,7 @@ CREATE TABLE videojuegos (
                              disponible_compra BOOLEAN NOT NULL DEFAULT TRUE,
                              disponible_alquiler BOOLEAN NOT NULL DEFAULT FALSE,
                              activo BOOLEAN NOT NULL DEFAULT TRUE,
+                             imagen VARCHAR(255),
                              FOREIGN KEY (id_plataforma) REFERENCES plataformas(id_plataforma),
                              CHECK (precio_compra IS NULL OR precio_compra >= 0),
                              CHECK (precio_alquiler IS NULL OR precio_alquiler >= 0)
