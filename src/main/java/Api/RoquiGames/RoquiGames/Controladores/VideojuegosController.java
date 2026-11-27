@@ -30,4 +30,15 @@ public class VideojuegosController {
     public MostrarVideojuegoDTO mostrarVideojuego(@PathVariable Integer id) {
         return videojuegosService.obtenerVideojuego(id);
     }
+
+    @GetMapping
+    public List<MostrarVideojuegoDTO> listarVideojuegos(@RequestParam(required = false) String titulo,
+                                                        @RequestParam(required = false) List<String> plataforma,
+                                                        @RequestParam(required = false) List<String> genero,
+                                                        @RequestParam(required = false) String modalidad,
+                                                        @RequestParam(required = false) BigDecimal precioMin,
+                                                        @RequestParam(required = false) BigDecimal precioMax) {
+        return videojuegosService.listarVideojuegos(titulo, plataforma, genero, modalidad, precioMin, precioMax);
+    }
+
 }

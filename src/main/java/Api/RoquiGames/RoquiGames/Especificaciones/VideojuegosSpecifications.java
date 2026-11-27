@@ -93,4 +93,13 @@ public class VideojuegosSpecifications {
                         max
                 );
     }
+
+    // "¿El título contiene este texto?"  →  SQL: WHERE LOWER(titulo) LIKE '%zelda%'
+    public static Specification<Videojuegos> tituloContiene(String texto) {
+        return (root, query, cb) ->
+                cb.like(                                // herramienta "¿se parece a...?" (LIKE)
+                        cb.lower(root.get("titulo")),   // el título del juego, en minúsculas
+                        "%" + texto.toLowerCase() + "%" // ...el texto buscado, en minúsculas y con % a los lados
+                );
+    }
 }

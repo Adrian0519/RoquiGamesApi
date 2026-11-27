@@ -212,5 +212,40 @@ public class VideojuegosService {
         return convertirADTO(videojuego);
     }
 
+    public List<MostrarVideojuegoDTO> listarVideojuegos(String titulo, List<String> plataformas, List<String> generos, String modalidad, BigDecimal precioMin, BigDecimal precioMax) {
+        Specification<Videojuegos> specificaciones = VideojuegosSpecifications.estaActivo();
 
+        if (titulo != null && !titulo.isBlank()) {
+            specificaciones = specificaciones.and(VideojuegosSpecifications.tituloContiene(titulo.trim()));
+        }
+
+        if (plataformas != null && !plataformas.isEmpty()) {
+            specificaciones = specificaciones.and(VideojuegosSpecifications.plataformaEn(plataformas));
+        }
+
+        if (generos != null && !generos.isEmpty()) {
+            for (int i = 0; i < generos.size(); i++) {
+                specificaciones = specificaciones.and(VideojuegosSpecifications.tieneGenero(generos.get(i)));
+            }
+        }
+
+        if ("compra".equals(modalidad)) {
+            specificaciones = specificaciones.and(VideojuegosSpecifications.disponibleParaComprar());
+        } else if ("alquiler".equals(modalidad)) {
+            specificaciones = specificaciones.and(VideojuegosSpecifications.disponibleParaAlquilar());
+        }
+
+        if (precioMin != null || precioMax != null) {
+            specificaciones = specificaciones.and(filtroPrecio(modalidad, precioMin, precioMax));
+        }
+
+        List<Videojuegos> juegos = videojuegosRepository.findAll(specificaciones);
+        List<MostrarVideojuegoDTO> resultado = new ArrayList<>();
+
+        for (int i = 0; i < juegos.size(); i++) {
+            resultado.add(convertirADTO(juegos.get(i)));
+        }
+
+        return resultado;
+    }
 }
