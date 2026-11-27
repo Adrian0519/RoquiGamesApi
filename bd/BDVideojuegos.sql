@@ -177,6 +177,17 @@ CREATE TABLE valoraciones (
 );
 
 -- ============================================================
+-- FOTOS_VIDEOJUEGOS
+-- ============================================================
+
+CREATE TABLE fotos_videojuegos (
+                                   id_foto INT AUTO_INCREMENT PRIMARY KEY,
+                                   id_videojuego INT NOT NULL,
+                                   foto VARCHAR(255) NOT NULL,
+                                   FOREIGN KEY (id_videojuego) REFERENCES videojuegos(id_videojuego)
+);
+
+-- ============================================================
 -- DATOS DE PRUEBA
 -- ============================================================
 
