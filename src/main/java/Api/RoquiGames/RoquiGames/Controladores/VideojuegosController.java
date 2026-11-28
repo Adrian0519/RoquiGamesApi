@@ -1,6 +1,8 @@
 package Api.RoquiGames.RoquiGames.Controladores;
 
 import Api.RoquiGames.RoquiGames.DTO.MostrarVideojuegoDTO;
+import Api.RoquiGames.RoquiGames.Entidades.Generos;
+import Api.RoquiGames.RoquiGames.Entidades.Plataformas;
 import Api.RoquiGames.RoquiGames.Servicios.VideojuegosService;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +32,16 @@ public class VideojuegosController {
                                                         @RequestParam(required = false) BigDecimal precioMin,
                                                         @RequestParam(required = false) BigDecimal precioMax) {
         return videojuegosService.listarVideojuegos(titulo, plataforma, genero, modalidad, precioMin, precioMax);
+    }
+
+    @GetMapping("/plataformas")
+    public List<String> listarPlataformas() {
+        return videojuegosService.listarPlataformas();
+    }
+
+    @GetMapping("/generos")
+    public List<String> listarGeneros() {
+        return videojuegosService.listarGeneros();
     }
 
 }

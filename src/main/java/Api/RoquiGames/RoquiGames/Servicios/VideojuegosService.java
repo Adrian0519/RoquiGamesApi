@@ -248,4 +248,18 @@ public class VideojuegosService {
 
         return resultado;
     }
+
+    public List<String> listarPlataformas() {
+        return plataformasRepository.findAll().stream()
+                .map(Plataformas::getNombre)
+                .sorted()
+                .toList();
+    }
+
+    public List<String> listarGeneros() {
+        return generosRepository.findAll().stream()
+                .map(Generos::getNombre)
+                .sorted()
+                .toList();
+    }
 }
